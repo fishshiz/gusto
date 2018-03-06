@@ -2284,7 +2284,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _mapboxGl2.default.accessToken = "pk.eyJ1IjoiZmlzaHNoaXoiLCJhIjoiY2plOGFqZXRoMDhqdTJxbGVoczRiOXA0aiJ9.wq7Jx1IPtLYkM5h4FA5MZQ";
 var MapboxGeocoder = __webpack_require__(54);
 
-var geocoder = new MapboxGeocoder({ accessToken: _mapboxGl2.default.accessToken, placeholder: 'Search for a location' });
+var geocoder = new MapboxGeocoder({
+  accessToken: _mapboxGl2.default.accessToken,
+  placeholder: "Search for a location"
+});
 
 function loadPlaces(map) {
   var lat = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 43.2;
@@ -2327,6 +2330,12 @@ function makeMap(mapDiv) {
     center: [-79.8, 43.2], // starting position [lng, lat]
     zoom: 9
   });
+  map.addControl(new _mapboxGl2.default.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true
+    },
+    trackUserLocation: true
+  }));
   loadPlaces(map);
   var autocomplete = new MapboxGeocoder({
     accessToken: _mapboxGl2.default.accessToken

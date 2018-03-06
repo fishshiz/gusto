@@ -3,7 +3,7 @@ extends layout
 block content
     .inner
         h2= title
-        .map
+        .map(h.mapboxKey)
             .autocomplete
                 #map
                 #mapbox

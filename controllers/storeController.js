@@ -16,6 +16,10 @@ const multerOptions = {
   }
 };
 
+exports.flashMap = (req, res) => {
+  req.flash('info', 'No restaurants in that location 😖');
+}
+
 exports.homePage = (req, res) => {
   res.render("index");
 };

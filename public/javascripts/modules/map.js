@@ -1,14 +1,21 @@
 import axios from "axios";
 import { $ } from "./bling";
 import mapboxgl from "mapbox-gl";
-mapboxgl.accessToken =
-"pk.eyJ1IjoiZmlzaHNoaXoiLCJhIjoiY2plOGFqZXRoMDhqdTJxbGVoczRiOXA0aiJ9.wq7Jx1IPtLYkM5h4FA5MZQ";
 var MapboxGeocoder = require("mapbox-gl-geocoder");
+let key;
+var geocoder;
+function initMap(mapDiv) {
+  axios.get("api/token").then(res => {
+    console.log(res.data);
+    mapboxgl.accessToken = res.data;
 
-var geocoder = new MapboxGeocoder({
-  accessToken: mapboxgl.accessToken,
-  placeholder: "Search for a location"
-});
+    geocoder = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      placeholder: "Search for a location"
+    });
+    makeMap(mapDiv);
+  });
+}
 
 function loadPlaces(map, lat = 43.2, lng = -79.8) {
   let coordinates = [];
@@ -60,12 +67,14 @@ function makeMap(mapDiv) {
     center: [-79.8, 43.2], // starting position [lng, lat]
     zoom: 9
   });
-  map.addControl(new mapboxgl.GeolocateControl({
+  map.addControl(
+    new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
       },
       trackUserLocation: true
-    }));
+    })
+  );
   loadPlaces(map);
   const autocomplete = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken
@@ -80,4 +89,4 @@ function makeMap(mapDiv) {
   });
 }
 
-export default makeMap;
+export default initMap;

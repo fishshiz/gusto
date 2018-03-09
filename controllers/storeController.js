@@ -192,3 +192,7 @@ exports.getTopStores = async (req, res) => {
   const stores = await Store.getTopStores();
   res.render('topStores', { stores, title : 'Top Stores' });
 }
+
+exports.token = async (req, res) => {
+  res.json(process.env.MAP_BOX);
+}

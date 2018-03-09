@@ -1,29 +1,27 @@
 import axios from "axios";
-import { $ } from "./bling";
 import mapboxgl from "mapbox-gl";
 var MapboxGeocoder = require("mapbox-gl-geocoder");
 let key;
 var geocoder;
+let coordinates = [];
+let markerArr = [];
 function initMap(mapDiv) {
   axios.get("api/token").then(res => {
-    console.log(res.data);
     mapboxgl.accessToken = res.data;
 
-    geocoder = new MapboxGeocoder({
-      accessToken: mapboxgl.accessToken,
-      placeholder: "Search for a location"
-    });
     makeMap(mapDiv);
   });
 }
 
 function loadPlaces(map, lat = 43.2, lng = -79.8) {
-  let coordinates = [];
   axios.get(`/api/stores/near?lat=${lat}&lng=${lng}`).then(res => {
     const places = res.data;
     if (!places.length) {
       alert("no places found :(");
       return;
+    } else if (coordinates.length > 0) {
+      markerArr.forEach(m => m.remove());
+      coordinates = [];
     }
 
     const markers = places.map(place => {
@@ -32,7 +30,7 @@ function loadPlaces(map, lat = 43.2, lng = -79.8) {
       const position = { lat: placeLat, lng: placeLng };
       var el = document.createElement("div");
       el.className = "marker";
-      new mapboxgl.Marker(el)
+      let marker = new mapboxgl.Marker(el)
         .setLngLat(place.location.coordinates)
         .setPopup(
           new mapboxgl.Popup({ offset: 25 }) // add popups
@@ -49,6 +47,7 @@ function loadPlaces(map, lat = 43.2, lng = -79.8) {
             )
         )
         .addTo(map);
+      markerArr.push(marker);
     });
     let bounds = coordinates.reduce(function(bounds, coord) {
       return bounds.extend(coord);
@@ -67,17 +66,10 @@ function makeMap(mapDiv) {
     center: [-79.8, 43.2], // starting position [lng, lat]
     zoom: 9
   });
-  map.addControl(
-    new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true
-      },
-      trackUserLocation: true
-    })
-  );
   loadPlaces(map);
   const autocomplete = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken
+    accessToken: mapboxgl.accessToken,
+    placeholder: "Search for a location"
   });
   map.addControl(autocomplete);
   autocomplete.on("result", ev => {
